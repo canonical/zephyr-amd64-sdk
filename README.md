@@ -1,7 +1,9 @@
 # Zephyr amd64 Toolchain SDK for Workshop
 
-This SDK provides the x86_64-zephyr-elf cross-compiler toolchain for building
-Zephyr firmware. It requires the `zephyr` base SDK.
+This SDK provides the x86_64 cross-compiler toolchain for building Zephyr
+firmware targeting the x86_64-zephyr-elf target triple. Use this SDK alongside
+the zephyr base SDK. Version updates are managed by Renovate and tracked from
+upstream [sdk-ng](https://github.com/zephyrproject-rtos/sdk-ng) releases.
 
 ---
 
@@ -15,28 +17,55 @@ name: zephyr-firmware
 base: ubuntu@24.04
 sdks:
   - name: uv
-    channel: all/edge
+    channel: latest/stable
   - name: zephyr
-    channel: 24.04/edge
+    channel: 4.4/stable
   - name: zephyr-amd64
-    channel: 24.04/edge
-
+    channel: 1.0.1/stable
+  - name: zephyr-sdk-ng
+    channel: 1.0.1/stable
 connections:
-  - plug: zephyr:amd64
+  - plug: zephyr:sdk-ng
+    slot: zephyr-sdk-ng:sdk-ng
+  - plug: zephyr-sdk-ng:amd64
     slot: zephyr-amd64:toolchain
   - plug: zephyr:venv
     slot: uv:venv
 ```
 
-This demonstrates a Zephyr environment with the x86_64-zephyr-elf toolchain
-and a uv-managed Python virtual environment connected.
+This demonstrates a Zephyr 4.4.x environment with the compatible SDK NG 1.0.x
+toolchain bundle and the x86_64-zephyr-elf cross-compiler connected.
+
+### Compatibility matrix
+
+| SDK NG / Toolchain | Zephyr |
+|---|---|
+| 1.1.x | 4.5.x |
+| 1.0.x | 4.4.x |
+| 0.17.x | 4.2.x, 4.3.x |
 
 ---
 
 ## Using the SDK
 
-See the [Zephyr SDK README](../zephyr/README.md) for the full build workflow
-and environment setup.
+### Prerequisites, project layout
+
+1. The `zephyr` base SDK and `zephyr-sdk-ng` SDK are required.
+2. Connect the `amd64` plug on `zephyr` to the `toolchain` slot on this SDK.
+3. No specific project layout is needed — the toolchain is available at
+   `$ZEPHYR_SDK_INSTALL_DIR` once the workshop launches.
+
+### Building Zephyr firmware
+
+See the [Zephyr SDK README](https://github.com/canonical/zephyr-sdk) for the
+full build workflow and environment setup.
+
+### Verify from the command line
+
+```bash
+workshop shell
+x86_64-zephyr-elf-gcc --version
+```
 
 ---
 
@@ -90,5 +119,5 @@ are welcome!
 
 Copyright 2025 Canonical Ltd.
 
-The Zephyr RTOS is licensed under the
+The Zephyr SDK NG toolchains are licensed under the
 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
